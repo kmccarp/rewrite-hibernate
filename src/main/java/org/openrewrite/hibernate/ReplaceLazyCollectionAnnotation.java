@@ -103,7 +103,7 @@ public class ReplaceLazyCollectionAnnotation extends Recipe {
                         .build()
                         .apply(getCursor(), ann.getCoordinates().replaceArguments());
                 JavaType fetchTypeType = JavaType.buildType("jakarta.persistence.FetchType");
-                J.Assignment assignment = (J.Assignment) annotationWithFetch.getArguments().get(0);
+                J.Assignment assignment = (J.Assignment) annotationWithFetch.getArguments().getFirst();
                 assignment = assignment
                         .withPrefix(currentArgs == null || currentArgs.isEmpty() ? Space.EMPTY : Space.SINGLE_SPACE)
                         .withAssignment(assignment.getAssignment().withType(fetchTypeType))
@@ -114,7 +114,7 @@ public class ReplaceLazyCollectionAnnotation extends Recipe {
             private <T extends J> T removeLazyCollectionAnnotation(T tree, ExecutionContext ctx) {
                 Optional<J.Annotation> lazyAnnotation = FindAnnotations.find(tree, "org.hibernate.annotations.LazyCollection")
                         .stream().findFirst();
-                if (!lazyAnnotation.isPresent()) {
+                if (lazyAnnotation.isEmpty()) {
                     return tree;
                 }
 
@@ -124,7 +124,7 @@ public class ReplaceLazyCollectionAnnotation extends Recipe {
                     // default is LazyCollectionOption.TRUE
                     getCursor().putMessage("fetchType", "FetchType.LAZY");
                 } else {
-                    switch (arguments.get(0).toString()) {
+                    switch (arguments.getFirst().toString()) {
                         case "LazyCollectionOption.FALSE":
                             getCursor().putMessage("fetchType", "FetchType.EAGER");
                             break;

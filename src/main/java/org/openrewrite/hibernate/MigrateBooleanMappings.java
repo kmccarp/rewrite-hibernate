@@ -73,8 +73,8 @@ public class MigrateBooleanMappings extends Recipe {
 
                         Object type = args.stream()
                                 .filter(exp -> {
-                                    if (exp instanceof J.Assignment) {
-                                        J.Identifier variable = (J.Identifier) ((J.Assignment) exp).getVariable();
+                                    if (exp instanceof J.Assignment assignment) {
+                                        J.Identifier variable = (J.Identifier) assignment.getVariable();
                                         return "type".equals(variable.getSimpleName());
                                     }
                                     return false;
@@ -82,18 +82,18 @@ public class MigrateBooleanMappings extends Recipe {
                                 .findFirst()
                                 .map(exp -> {
                                     Expression value = ((J.Assignment) exp).getAssignment();
-                                    if (value instanceof J.Literal) {
-                                        return ((J.Literal) value).getValue();
+                                    if (value instanceof J.Literal literal) {
+                                        return literal.getValue();
                                     }
                                     return null;
                                 })
                                 .orElse(null);
 
-                        if (type instanceof String && REPLACEMENTS.containsKey((String) type)) {
-                            String converterName = REPLACEMENTS.get((String) type);
-                            String converterFQN = String.format("org.hibernate.type.%s", converterName);
+                        if (type instanceof String string && REPLACEMENTS.containsKey(string)) {
+                            String converterName = REPLACEMENTS.get(string);
+                            String converterFQN = "org.hibernate.type.%s".formatted(converterName);
 
-                            ann = JavaTemplate.builder(String.format("@Convert(converter = %s.class)", converterName))
+                            ann = JavaTemplate.builder("@Convert(converter = %s.class)".formatted(converterName))
                                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "hibernate-core", "jakarta.persistence-api"))
                                     .imports(converterFQN, "jakarta.persistence.Convert")
                                     .contextSensitive()

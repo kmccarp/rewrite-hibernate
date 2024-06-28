@@ -69,8 +69,7 @@ public class TypeAnnotationParameter extends Recipe {
                 if (FQN_TYPE_ANNOTATION.matches(a)) {
                     // Remove entire annotation if type is one of the removed types
                     if (a.getArguments().stream().anyMatch(arg -> {
-                        if (arg instanceof J.Assignment) {
-                            J.Assignment assignment = (J.Assignment) arg;
+                        if (arg instanceof J.Assignment assignment) {
                             if (assignment.getVariable() instanceof J.Identifier
                                 && "type".equals(((J.Identifier) assignment.getVariable()).getSimpleName())
                                 && assignment.getAssignment() instanceof J.Literal) {
@@ -87,8 +86,7 @@ public class TypeAnnotationParameter extends Recipe {
                     final boolean isOnlyParameter = a.getArguments().size() == 1;
                     // Replace type parameter with value parameter
                     a = a.withArguments(ListUtils.map(a.getArguments(), arg -> {
-                        if (arg instanceof J.Assignment) {
-                            J.Assignment assignment = (J.Assignment) arg;
+                        if (arg instanceof J.Assignment assignment) {
                             if (assignment.getVariable() instanceof J.Identifier
                                     && "type".equals(((J.Identifier) assignment.getVariable()).getSimpleName())
                                     && assignment.getAssignment() instanceof J.Literal) {
